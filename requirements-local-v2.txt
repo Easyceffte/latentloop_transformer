@@ -1,0 +1,11 @@
+# Optional convenience requirements for local V2 4070 runs.
+# Prefer: pip install -e .[data,dev]
+torch>=2.1
+numpy>=1.24
+tqdm>=4.66
+pyyaml>=6.0
+sentencepiece>=0.1.99
+datasets>=2.19
+huggingface_hub>=0.23
+requests>=2.31
+pytest>=7.4

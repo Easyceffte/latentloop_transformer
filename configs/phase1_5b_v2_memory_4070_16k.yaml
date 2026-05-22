@@ -1,0 +1,66 @@
+training_mode: from_scratch
+transformer:
+  vocab_size: 32000
+  max_seq_len: 256
+  n_layers: 18
+  d_model: 768
+  n_q_heads: 12
+  n_kv_heads: 4
+  ffn_dim: 2560
+  dual_stream_layers: [5, 11]
+  dense_feedback_layer: 14
+  tie_lm_head: true
+  gradient_checkpointing: false
+diffusion:
+  latent_dim: 256
+  denoise_dim: 512
+  denoiser_layers: 4
+  denoiser_heads: 8
+  ddpm_timesteps: 1000
+  idea_slots: 16
+loop:
+  latent_dim: 256
+  block_layers: 4
+  heads: 8
+interaction:
+  train_rounds: 3
+  infer_min_rounds: 2
+  infer_max_rounds: 5
+controller:
+  alpha_inf: 0.8
+  alpha_write: 0.5
+  alpha_read: 0.6
+memory:
+  n_slots: 16384
+  d_mem: 256
+  query_dim: 128
+  top_k: 64
+  graph_nodes: 64
+  use_lsh: false
+  exact_threshold: 1000000
+  online_update: false
+  memory_lr: 0.0002
+dense_feedback:
+  enabled: true
+  recompute_current_forward: true
+losses: {}
+optim:
+  lr: 0.001
+  min_lr: 0.0001
+  beta1: 0.9
+  beta2: 0.98
+  weight_decay: 0.01
+  total_steps: 50
+  grad_clip: 1.0
+  micro_batch_size: 32
+  grad_accum: 1
+  bf16: true
+memory_objective:
+  objective: recon_contrast_graph
+  target_field: z_fused_l5
+  query_field: z_query_l5
+  reconstruction_weight: 1.0
+  contrastive_weight: 0.1
+  graph_weight: 0.01
+  norm_weight: 0.001
+  contrastive_tau: 0.1

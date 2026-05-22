@@ -1,0 +1,90 @@
+# Local V2 16K data sources for 4070 from-zero runs.
+# The pipeline keeps a hard domain mix in scripts/data/common.py:
+#   general 85%, reasoning 10%, divergent 5%.
+# This file controls source mix inside each remote domain. All remote sources
+# are public Hugging Face datasets and are streamed into data/raw_cache first;
+# reruns should use --reuse_raw_cache to avoid repeated downloads.
+#
+# Recommended stages with seq_len=256:
+#   local_v2_1m -> 4096 train blocks ~= 1.05M train tokens
+#   local_v2_3m -> 12288 train blocks ~= 3.15M train tokens
+#   local_v2_5m -> 20480 train blocks ~= 5.24M train tokens
+sources:
+  fineweb_edu:
+    hf_id: HuggingFaceFW/fineweb-edu
+    subset: null
+    split: train
+    text_field: text
+    domain: general
+    subdomain: edu_web
+    license: odc-by
+    streaming: true
+    default_weight: 0.62
+    required: true
+
+  smollm_fineweb_edu_dedup:
+    hf_id: HuggingFaceTB/smollm-corpus
+    subset: fineweb-edu-dedup
+    split: train
+    text_field: text
+    domain: general
+    subdomain: edu_web_dedup
+    license: odc-by
+    streaming: true
+    default_weight: 0.18
+    required: true
+
+  cosmopedia_v2:
+    hf_id: HuggingFaceTB/smollm-corpus
+    subset: cosmopedia-v2
+    split: train
+    text_field: text
+    domain: general
+    subdomain: synthetic_edu
+    license: odc-by
+    streaming: true
+    default_weight: 0.20
+    required: true
+
+  openmathreasoning_cot:
+    hf_id: nvidia/OpenMathReasoning
+    subset: null
+    split: cot
+    formatter: problem_solution
+    text_field_priority: [generated_solution, solution, text, problem]
+    domain: reasoning
+    subdomain: math_cot
+    license: cc-by-4.0
+    streaming: true
+    default_weight: 0.70
+    required: true
+
+  codesearchnet_python:
+    hf_id: Nan-Do/code-search-net-python
+    subset: null
+    split: train
+    text_field_priority: [whole_func_string, func_code_string, code, docstring, text]
+    domain: reasoning
+    subdomain: code_python
+    license: apache-2.0
+    streaming: true
+    default_weight: 0.30
+    required: true
+
+planned_fallbacks:
+  general_web:
+    - hf_id: allenai/dolma
+      subset: v1_6-sample
+      split: train
+      text_field: text
+      domain: general
+      license: odc-by
+  reasoning_math:
+    - synthetic_math_reasoning_seeded
+  reasoning_code:
+    - hf_id: Nan-Do/code-search-net-python
+      subset: null
+      split: train
+      text_field_priority: [whole_func_string, func_code_string, code, docstring, text]
+      domain: reasoning
+      license: apache-2.0

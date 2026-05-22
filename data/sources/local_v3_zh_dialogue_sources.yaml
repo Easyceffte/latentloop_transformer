@@ -1,0 +1,119 @@
+# Local V3 data mix for native Chinese conversational ability.
+# Ratio is enforced by scripts/data/common.py: general=0.60, dialogue=0.20, reasoning=0.15, divergent=0.05.
+# Sources are intentionally configurable; Codex should probe and replace unavailable mirrors without using mock data.
+sources:
+  cci3_hq_zh:
+    hf_id: BAAI/CCI3-HQ
+    split: train
+    streaming: true
+    domain: general
+    subdomain: zh_web_high_quality
+    text_field_priority: [text, content]
+    default_weight: 0.35
+  wikipedia_zh:
+    hf_id: wikimedia/wikipedia
+    subset: 20231101.zh
+    split: train
+    streaming: true
+    domain: general
+    subdomain: zh_wikipedia
+    text_field_priority: [text]
+    default_weight: 0.20
+  fineweb_edu:
+    hf_id: HuggingFaceFW/fineweb-edu
+    split: train
+    streaming: true
+    domain: general
+    subdomain: en_high_quality_web
+    text_field_priority: [text]
+    default_weight: 0.20
+  cosmopedia_v2:
+    hf_id: HuggingFaceTB/cosmopedia-v2
+    split: train
+    streaming: true
+    domain: general
+    subdomain: textbook_synthetic
+    text_field_priority: [text, prompt]
+    default_weight: 0.15
+  chinese_instruction_alpaca_gpt4:
+    hf_id: shibing624/alpaca-zh
+    split: train
+    streaming: true
+    domain: dialogue
+    subdomain: zh_instruction
+    formatter: instruction_response
+    text_field_priority: [output, instruction, text]
+    default_weight: 0.30
+  belle_multiturn:
+    hf_id: BelleGroup/multiturn_chat_0.8M
+    split: train
+    streaming: true
+    domain: dialogue
+    subdomain: zh_multiturn
+    formatter: conversation
+    text_field_priority: [conversation, conversations, instruction, output, text]
+    default_weight: 0.35
+  sharegpt_zh_like:
+    hf_id: FreedomIntelligence/sharegpt-chinese
+    split: train
+    streaming: true
+    domain: dialogue
+    subdomain: zh_sharegpt
+    formatter: conversation
+    text_field_priority: [conversations, conversation, messages, text]
+    default_weight: 0.20
+  alpaca_gpt4_en:
+    hf_id: tatsu-lab/alpaca
+    split: train
+    streaming: true
+    domain: dialogue
+    subdomain: en_instruction
+    formatter: instruction_response
+    text_field_priority: [instruction, output, text]
+    default_weight: 0.15
+  openmathreasoning_cot:
+    hf_id: nvidia/OpenMathReasoning
+    split: cot
+    streaming: true
+    domain: reasoning
+    subdomain: math_cot
+    formatter: problem_solution
+    text_field_priority: [generated_solution, problem, text]
+    default_weight: 0.30
+  cmath_zh:
+    hf_id: weidawang/CMATH
+    split: train
+    streaming: true
+    domain: reasoning
+    subdomain: zh_math
+    formatter: problem_solution
+    text_field_priority: [question, answer, text]
+    default_weight: 0.20
+  gsm8k:
+    hf_id: openai/gsm8k
+    subset: main
+    split: train
+    streaming: true
+    domain: reasoning
+    subdomain: math_en
+    formatter: problem_solution
+    text_field_priority: [question, answer]
+    default_weight: 0.20
+  code_search_net_python:
+    hf_id: code_search_net
+    subset: python
+    split: train
+    streaming: true
+    domain: reasoning
+    subdomain: code_python
+    text_field_priority: [whole_func_string, func_documentation_string, text]
+    default_weight: 0.15
+  smollm_fineweb_edu_dedup:
+    hf_id: HuggingFaceTB/smollm-corpus
+    subset: fineweb-edu-dedup
+    split: train
+    streaming: true
+    domain: reasoning
+    subdomain: high_quality_web_reasoning
+    text_field_priority: [text]
+    default_weight: 0.15

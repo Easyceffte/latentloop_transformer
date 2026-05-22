@@ -1,0 +1,88 @@
+training_mode: from_scratch
+transformer:
+  vocab_size: 32000
+  max_seq_len: 256
+  n_layers: 18
+  d_model: 768
+  n_q_heads: 12
+  n_kv_heads: 4
+  ffn_dim: 2560
+  rope_theta: 10000.0
+  dropout: 0.0
+  dual_stream_layers: [5, 11]
+  dense_feedback_layer: 14
+  tie_lm_head: true
+  gradient_checkpointing: true
+diffusion:
+  latent_dim: 256
+  denoise_dim: 512
+  denoiser_layers: 4
+  denoiser_heads: 8
+  ddpm_timesteps: 1000
+  ddim_steps: 10
+  prediction_type: v_prediction
+  train_t_start_choices: [300, 500, 650, 800]
+  infer_t_start: [300, 500, 650, 800]
+  idea_slots: 16
+  train_lm_path: predicted_x0
+loop:
+  latent_dim: 256
+  block_layers: 4
+  heads: 8
+  train_steps_choices: [2, 4, 8]
+  infer_steps: 8
+interaction:
+  train_rounds: 3
+  infer_min_rounds: 2
+  infer_max_rounds: 5
+controller:
+  alpha_inf: 0.8
+  alpha_write: 0.5
+  alpha_read: 0.6
+memory:
+  n_slots: 16384
+  d_mem: 256
+  query_dim: 128
+  top_k: 64
+  graph_nodes: 64
+  use_lsh: false
+  exact_threshold: 1000000
+  retrieval_backend: exact_chunked
+  exact_query_chunk: 128
+  exact_slot_chunk: 4096
+  use_memory_distiller: true
+  online_update: false
+  memory_lr: 0.0002
+dense_feedback:
+  enabled: true
+  recompute_current_forward: true
+  cached_next_forward: false
+losses:
+  lm_loss: 1.0
+  ddpm_loss: 0.5
+  anchor_loss: 0.05
+  slot_diversity_loss: 0.03
+  exit_entropy_loss: 0.02
+  shortcut_consistency_loss: 0.005
+  dense_feedback_reg_loss: 0.01
+  controller_balance_loss: 0.01
+  memory_surprise_loss: 0.03
+  graph_sparsity_loss: 0.01
+  memory_stability_loss: 0.005
+  controller_balance_warmup_steps: 2000
+  anchor_warmup_steps: 5000
+  anchor_loss_initial: 0.01
+optim:
+  lr: 0.0003
+  min_lr: 0.00003
+  beta1: 0.9
+  beta2: 0.98
+  weight_decay: 0.1
+  warmup_steps: 500
+  total_steps: 20000
+  stable_until_ratio: 0.8
+  grad_clip: 1.0
+  micro_batch_size: 1
+  grad_accum: 64
+  bf16: true
+  chunked_ce_size: 128

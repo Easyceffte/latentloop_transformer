@@ -1,0 +1,59 @@
+training_mode: from_scratch
+transformer:
+  vocab_size: 512
+  max_seq_len: 64
+  n_layers: 18
+  d_model: 96
+  n_q_heads: 4
+  n_kv_heads: 2
+  ffn_dim: 256
+  dual_stream_layers: [5, 11]
+  dense_feedback_layer: 14
+  dropout: 0.0
+diffusion:
+  latent_dim: 32
+  denoise_dim: 64
+  denoiser_layers: 2
+  denoiser_heads: 4
+  ddpm_timesteps: 100
+  ddim_steps: 4
+  train_t_start_choices: [20, 40, 60, 80]
+  infer_t_start: [20, 40, 60, 80]
+  idea_slots: 4
+loop:
+  latent_dim: 32
+  block_layers: 2
+  heads: 4
+  train_steps_choices: [2, 4]
+  infer_steps: 4
+  max_steps: 8
+interaction:
+  train_rounds: 3
+  infer_min_rounds: 2
+  infer_max_rounds: 3
+memory:
+  n_slots: 2048
+  d_mem: 32
+  query_dim: 16
+  top_k: 16
+  graph_nodes: 16
+  use_lsh: false
+  lsh_max_candidates: 10000
+  lsh_query_chunk: 16
+  exact_threshold: 4096
+  online_update: false
+dense_feedback:
+  enabled: true
+  n_routes: 10
+  warmup_steps: 10
+  recompute_current_forward: true
+  cached_next_forward: false
+optim:
+  lr: 1.0e-3
+  min_lr: 1.0e-4
+  warmup_steps: 10
+  total_steps: 100
+  micro_batch_size: 1
+  grad_accum: 1
+  bf16: false
+  chunked_ce_size: 32

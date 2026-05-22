@@ -1,0 +1,8 @@
+{
+  "stage": "local_v2_1m",
+  "seq_len": 256,
+  "train_jsonl": "/mnt/data/ll_local/latentloop_transformer-main/data/processed/local_v2_1m.train.jsonl",
+  "phase1_dir": "/mnt/data/ll_local/latentloop_transformer-main/outputs/local_v2_1m_phase1_local_v2_16k",
+  "features": "/mnt/data/ll_local/latentloop_transformer-main/data/processed/local_v2_1m.memory_features.pt",
+  "memory_dir": "/mnt/data/ll_local/latentloop_transformer-main/outputs/local_v2_1m_phase1_5b_v2_16k"
+}

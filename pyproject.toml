@@ -1,0 +1,19 @@
+[project]
+name = "latentloop-pds-m"
+version = "0.1.0"
+description = "LatentLoop-Transformer-PDS+M: parallel diffusion/recurrent latent reasoning with latent dense memory graph"
+requires-python = ">=3.10"
+dependencies = [
+  "torch>=2.1",
+  "numpy>=1.24",
+  "tqdm>=4.66",
+  "pyyaml>=6.0",
+  "sentencepiece>=0.1.99",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+data = ["datasets>=2.19", "huggingface_hub>=0.23", "requests>=2.31"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
