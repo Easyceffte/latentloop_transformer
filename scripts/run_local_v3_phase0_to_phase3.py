@@ -75,7 +75,7 @@ def main():
         run(cmd,env=env)
         if args.stage=='phase0_data': return
     if args.stage in {'all','audit_data'}:
-        run([sys.executable,'scripts/data/audit_dataset.py','--train',f'data/processed/{st}.train.jsonl','--val',f'data/processed/{st}.val.jsonl','--test',f'data/processed/{st}.test.jsonl','--seq_len',args.seq_len,'--vocab_size','32000','--expected_mix','general=0.60,dialogue=0.20,reasoning=0.15,divergent=0.05','--out',f'data/reports/audit_{st}_v3.json'],env=env)
+        run([sys.executable,'scripts/data/audit_dataset.py','--train',f'data/processed/{st}.train.jsonl','--val',f'data/processed/{st}.val.jsonl','--test',f'data/processed/{st}.test.jsonl','--seq_len',args.seq_len,'--vocab_size','32000','--expected_mix','general=0.60,dialogue=0.20,reasoning=0.15,divergent=0.05','--out',f'data/reports/audit_{st}_v3.json','--raw_train',f'data/intermediate/{st}.train.raw.jsonl','--raw_val',f'data/intermediate/{st}.val.raw.jsonl','--raw_test',f'data/intermediate/{st}.test.raw.jsonl','--require_zh_dialogue'],env=env)
         if args.stage=='audit_data': return
     if args.stage in {'all','profile'}:
         run([sys.executable,'scripts/profile_local_v3.py','--config',args.safe_config,'--data',train,'--steps','10','--warmup','2','--out',f'docs/local_v3_profile_{st}.json'],env=env)

@@ -105,6 +105,18 @@ Run real data. Mock is forbidden for success claims.
 .\.venv\Scripts\python.exe scripts\run_local_v3_phase0_to_phase3.py --stage audit_data --mtokens 1
 ```
 
+### Chinese-script coverage gate
+
+Phase0 now audits the *selected raw records* in `data/intermediate/local_v3_*.{train,val,test}.raw.jsonl` before tokenization and packing, rather than inferring language from source names or the 20% dialogue block ratio. Both `data/reports/pipeline_local_v3_*.json` and `data/reports/audit_local_v3_*.json` contain `language_coverage` for each split; the separate `audit_data` stage writes the same measurements to `data/reports/audit_local_v3_*_v3.json`.
+
+For each split, inspect `overall`, `by_domain`, `by_source`, and `by_source_domain`. Each group reports raw record count, records containing Han characters, Han character count, non-whitespace character count, corresponding fractions, and records with missing/empty text. Chinese-script dialogue is measured from records whose **domain is `dialogue`**; Han characters found only in `general` or `reasoning` do not satisfy the dialogue gate.
+
+The **Local V3 train-only presence gate** blocks if there are no raw dialogue records or if all raw dialogue records contain zero Han characters. The `audit_data` stage also blocks if the required raw train JSONL is missing. Val/test language measures are descriptive, since tiny split sizes can contain no Chinese dialogue by chance. Older pipeline stages keep the descriptive report without this Local V3 gate. No minimum percentage is asserted: the spec does not define one.
+
+These are Unicode Han-script checks, not language identification. Other languages can use Han characters, a record with one Han character can pass the minimal presence gate, and raw-record character proportions do not equal packed training-token proportions. A PASS therefore does **not** certify meaningful Chinese conversational ability. On real downloaded data, review source/formatter outputs (including Chinese assistant responses), per-domain and per-source fractions, packed-token representation, and Chinese generation evaluations before a language-coverage acceptance threshold is proposed.
+
+To re-run only the Local V3 data audit after Phase0, use the `audit_data` stage command above. For standalone `audit_dataset.py`, supply `--raw_train`, optionally `--raw_val` and `--raw_test`, and `--require_zh_dialogue` to apply the train presence gate.
+
 ### Phase1 base
 
 ```powershell
