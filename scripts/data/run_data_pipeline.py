@@ -32,6 +32,7 @@ from scripts.data.common import (
     write_jsonl,
 )
 from scripts.data.tokenize_and_pack import pack_records
+from scripts.data.audit_language import add_raw_language_coverage
 
 
 def load_hf_iter(name: str, spec: Dict[str, Any], hf_cache_dir: str | None = None) -> Iterable[Dict[str, Any]]:
@@ -396,6 +397,7 @@ def main() -> None:
         "split_counts": counts,
         "blocked_reasons": [],
         "source_cache": {},
+        "language_coverage": {},
     }
 
     raw_paths: Dict[str, Path] = {}
@@ -417,6 +419,10 @@ def main() -> None:
     raw_train = intermediate / f"{args.stage}.train.raw.jsonl"
     write_jsonl(raw_train, all_train_docs)
     raw_paths["train"] = raw_train
+    add_raw_language_coverage(
+        pipeline_report, "train", raw_train,
+        require_zh_dialogue=args.stage.startswith("local_v3_"),
+    )
 
     tokenizer_model = train_tokenizer_if_needed(raw_train, Path(args.tokenizer_out), args.reuse_tokenizer, args.tokenizer_vocab_size, allow_mock_fallback=args.offline_mock)
     pipeline_report["tokenizer_model"] = str(tokenizer_model)
@@ -443,6 +449,7 @@ def main() -> None:
             raw_path = intermediate / f"{args.stage}.{split}.raw.jsonl"
             write_jsonl(raw_path, docs)
             raw_paths[split] = raw_path
+            add_raw_language_coverage(pipeline_report, split, raw_path)
         out_path = output_dir / f"{args.stage}.{split}.jsonl"
         n = write_split_blocks(docs, str(tokenizer_model), args.seq_len, n_blocks, out_path)
         pipeline_report[f"{split}_path"] = str(out_path)
@@ -471,6 +478,7 @@ def main() -> None:
         "decision": "PASS" if not pipeline_report["blocked_reasons"] else "BLOCKED",
         "stage": args.stage,
         "splits": split_reports,
+        "language_coverage": pipeline_report["language_coverage"],
         "blocked_reasons": pipeline_report["blocked_reasons"],
     }
     audit_path = report_dir / f"audit_{args.stage}.json"

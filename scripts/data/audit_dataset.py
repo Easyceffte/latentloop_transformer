@@ -17,6 +17,7 @@ import torch
 import torch.nn.functional as F
 
 from scripts.data.common import BOS_ID, DOMAIN_RATIOS, EOS_ID, PAD_ID, read_jsonl, sha1_ids
+from scripts.data.audit_language import add_raw_language_coverage
 
 
 def is_tail_padding(ids: List[int]) -> bool:
@@ -142,6 +143,10 @@ def main() -> None:
     ap.add_argument("--expected_mix", default="general=0.60,dialogue=0.20,reasoning=0.15,divergent=0.05")
     ap.add_argument("--out", default="data/reports/audit_dataset.json")
     ap.add_argument("--strict_all_splits", action="store_true", help="Apply exact mix-ratio tolerance to val/test as well as train.")
+    ap.add_argument("--raw_train", default=None, help="Pre-tokenization raw train JSONL for Chinese-script coverage.")
+    ap.add_argument("--raw_val", default=None, help="Optional raw val JSONL for descriptive coverage.")
+    ap.add_argument("--raw_test", default=None, help="Optional raw test JSONL for descriptive coverage.")
+    ap.add_argument("--require_zh_dialogue", action="store_true", help="Block if raw train has no dialogue with Han script; requires --raw_train.")
     args = ap.parse_args()
     expected = {}
     if args.expected_mix:
@@ -149,7 +154,12 @@ def main() -> None:
             if part.strip():
                 k, v = part.split("=")
                 expected[k.strip()] = float(v)
-    report = {"seq_len": args.seq_len, "vocab_size": args.vocab_size, "splits": {}, "blocked_reasons": []}
+    report = {"seq_len": args.seq_len, "vocab_size": args.vocab_size, "splits": {}, "language_coverage": {}, "blocked_reasons": []}
+    if args.require_zh_dialogue and not args.raw_train:
+        report["blocked_reasons"].append("train raw language: --raw_train is required with --require_zh_dialogue")
+    for split, raw_path in (("train", args.raw_train), ("val", args.raw_val), ("test", args.raw_test)):
+        if raw_path:
+            add_raw_language_coverage(report, split, raw_path, require_zh_dialogue=(split == "train" and args.require_zh_dialogue))
     train = audit_one(Path(args.train), args.seq_len, args.vocab_size, expected)
     report["splits"]["train"] = {k: v for k, v in train.items() if k != "hashes"}
     report["blocked_reasons"].extend([f"train: {x}" for x in train["blocked_reasons"]])
